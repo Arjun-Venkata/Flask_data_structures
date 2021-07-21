@@ -45,7 +45,7 @@ class BinarySearchTree:
         if node is None:
             return None
         if node.data["id"] is value:
-            return node
+            return node.data
         if node.data["id"] < value:
             return self._search(value, node.right)
         else:
@@ -54,7 +54,7 @@ class BinarySearchTree:
 
     def search(self, value):
         node = self.root
-        return self._search(int(value), node).data
+        return self._search(int(value), node)
 
 # p = BinarySearchTree()
 # p.insert(4)

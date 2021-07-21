@@ -1,3 +1,4 @@
+from operator import pos
 from sqlite3 import Connection as SQLite3Connection
 from datetime import datetime
 from sqlalchemy import event
@@ -7,6 +8,7 @@ from flask_sqlalchemy import SQLAlchemy
 import linked_list as ll
 import hash_table as ht
 import binary_search_tree as bst
+import custom_queue as q
 
 import random
 
@@ -184,6 +186,33 @@ def get_one_blog_post(blog_post_id):
 		return jsonify({"message": "post not found"})
 	
 	return jsonify(post)
+
+@app.route("/blog_post/numeric_body", methods=["GET"])
+def get_numeric_post_bodies():
+	blog_posts = BlogPost.query.all()
+
+	cq = q.Queue()
+	for post in blog_posts:
+		cq.enqueue(post)
+
+	return_list = []
+
+	for _ in range(len(blog_posts)):
+		post = cq.dequeue()
+		numeric_body = 0
+		for char in post.body:
+			numeric_body += ord(char)
+		
+		post.body = numeric_body
+		return_list.append({
+
+			"id": post.id,
+			"title": post.title,
+			"body": post.body,
+			"user_id": post.user_id,
+			
+		})
+	return jsonify(return_list)
 
 
 @app.route("/blog_post/<blog_post_id>", methods=["DELETE"])
