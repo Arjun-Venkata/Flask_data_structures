@@ -9,6 +9,7 @@ import linked_list as ll
 import hash_table as ht
 import binary_search_tree as bst
 import custom_queue as q
+import stack as st
 
 import random
 
@@ -215,9 +216,21 @@ def get_numeric_post_bodies():
 	return jsonify(return_list)
 
 
-@app.route("/blog_post/<blog_post_id>", methods=["DELETE"])
-def delete_blog_post(blog_post_id):
-	pass
+@app.route("/blog_post/delete_last_10", methods=["DELETE"])
+def delete_last_10():
+	blog_posts = BlogPost.query.all()
+	s = st.Stack()
+
+	for post in blog_posts:
+		s.push(post)
+	
+	for _ in range(10):
+		post_to_delete = s.pop()
+		db.session.delete(post_to_delete)
+		db.session.commit()
+	
+	return jsonify({"message": "success"}), 200
+	
 
 if __name__ == "__main__":
 	app.run(debug=True)
